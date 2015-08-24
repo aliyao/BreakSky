@@ -3,7 +3,7 @@
 
     <string name="dummy_button">跳 过</string>
     <string name="dummy_content">何时\n石破天惊</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">BreakSky</string>
 
     <string name="title_section1">发现</string>
     <string name="title_section2">收藏</string>
