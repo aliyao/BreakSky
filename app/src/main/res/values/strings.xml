@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">BreakSky</string>
+
+    <string name="dummy_button">跳 过</string>
+    <string name="dummy_content">何时\n石破天惊</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="title_section1">发现</string>
+    <string name="title_section2">收藏</string>
+    <string name="title_section3">未知</string>
+
+    <string name="navigation_drawer_open">打开导航抽屉</string>
+    <string name="navigation_drawer_close">关闭导航抽屉</string>
+
+    <string name="action_example">保存</string>
+
+    <string name="action_settings">设置</string>
+</resources>
