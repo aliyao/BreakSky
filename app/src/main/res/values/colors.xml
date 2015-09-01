@@ -2,4 +2,7 @@
 
     <color name="black_overlay">#66000000</color>
 
+    <color name="button_red_focus">#CCDF3120</color>
+    <color name="button_red_pressed">#EEDF3120</color>
+
 </resources>
