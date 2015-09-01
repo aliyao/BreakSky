@@ -14,5 +14,6 @@
 
     <string name="action_example">退出应用</string>
 
-    <string name="action_settings">设置</string>
+    <string name="action_settings">保存</string>
+    <string name="title_activity_info">BreakSky</string>
 </resources>

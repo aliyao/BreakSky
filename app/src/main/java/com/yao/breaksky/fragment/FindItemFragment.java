@@ -1,6 +1,7 @@
 package com.yao.breaksky.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,6 +17,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.yao.breaksky.R;
+import com.yao.breaksky.activity.InfoActivity;
 import com.yao.breaksky.activity.MainActivity;
 import com.yao.breaksky.fragment.dummy.DummyContent;
 import com.yao.breaksky.net.HttpUrl;
@@ -123,6 +125,11 @@ public class FindItemFragment extends Fragment implements AbsListView.OnItemClic
         // TODO: Change Adapter to display your content
         mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
                 R.layout.fragment_finditem_list_item, DummyContent.ITEMS) {
+            @Override
+            public DummyContent.DummyItem getItem(int position) {
+                return super.getItem(position);
+            }
+
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view;
@@ -328,6 +335,7 @@ public class FindItemFragment extends Fragment implements AbsListView.OnItemClic
             // fragment is attached to one) that an item has been selected.
             mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
         }
+        startActivity(new Intent(this.getActivity(), InfoActivity.class).putExtra("id", ((ArrayAdapter<DummyContent.DummyItem>) mAdapter).getItem(position).getId()).putExtra("url", (String)((ArrayAdapter<DummyContent.DummyItem>) mAdapter).getItem(position).getUrl()));
     }
 
     /**
