@@ -10,7 +10,7 @@ package com.yao.breaksky.net;
  * 修改备注：
  */
 public class HttpUrl {
-    //public static String FindList="http://www.id97.com/videos/movie?page=1";
-    public static String FindList="http://www.csdn.net/";
+    public static String FindList="http://www.id97.com/videos/movie?page=1";
+    //public static String FindList="http://www.csdn.net/";
 
 }

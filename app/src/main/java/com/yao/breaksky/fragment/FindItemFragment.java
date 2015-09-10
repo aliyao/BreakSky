@@ -19,7 +19,6 @@ import com.yao.breaksky.net.HttpUrl;
 
 import org.kymjs.kjframe.KJHttp;
 import org.kymjs.kjframe.http.HttpCallBack;
-import org.kymjs.kjframe.http.HttpParams;
 import org.kymjs.kjframe.ui.ViewInject;
 import org.kymjs.kjframe.utils.KJLoger;
 
@@ -52,7 +51,16 @@ public class FindItemFragment extends Fragment implements AbsListView.OnItemClic
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    /*
+    <a style="position:relative;display:block;" title="张震讲故事之鬼迷心窍" target="_blank" href="http://www.id97.com/videos/resource/id/9189.html">
+            <img alt="张震讲故事之鬼迷心窍" title="张震讲故事之鬼迷心窍" src="http://ww3.sinaimg.cn/large/0069qWFHgw1etwjkiath0j30bw0gogo8.jpg" height="230" width="100%">
+        <button class="hdtag">高清</button>
+        </a>
 
+        "title=\"(.*?)\" target="_blank" href=\"(.*?)\""
+     */
+    final String zhengZe= "title=\"(.*?)\" target=\"_blank\" href=\"(.*?)\"";
+   //final String zhengZe="title=\"(.*?)\" href=\"(.*?)\".*?363";
     /**
      * The fragment's ListView/GridView.
      */
@@ -188,7 +196,7 @@ public class FindItemFragment extends Fragment implements AbsListView.OnItemClic
                 ViewInject.longToast("请求成功");
                 KJLoger.debug("log:" + t.toString());
 
-                Pattern p = Pattern.compile("title=\"(.*?)\" href=\"(.*?)\".*?363");
+                Pattern p = Pattern.compile(zhengZe);
                 Matcher m = p.matcher(t.toString()); //csdn首页的源代码字符串
                 List< Map<String, Object>> result = new ArrayList<>();
                 while (m.find()) { //循环查找匹配字串
