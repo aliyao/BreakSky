@@ -3,12 +3,15 @@ package com.yao.breaksky.fragment;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
@@ -32,10 +35,10 @@ import java.util.regex.Pattern;
 
 /**
  * A fragment representing a list of Items.
- * <p>
+ * <p/>
  * Large screen devices (such as tablets) are supported by replacing the ListView
  * with a GridView.
- * <p>
+ * <p/>
  * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
@@ -57,10 +60,20 @@ public class FindItemFragment extends Fragment implements AbsListView.OnItemClic
         <button class="hdtag">高清</button>
         </a>
 
-        "title=\"(.*?)\" target="_blank" href=\"(.*?)\""
+        "title=\"(.*?)\" target="_blank" href=\"(.*?)\">
+            <img alt=".*?" title=".*?" src="(.*?)""
+            "title=\"(.*?)\" target=\"_blank\" href=\"(.*?)\">.?<img alt=\".*?\" title=\".*?\" src=\"(.*?)\"";
+            "title=\"(.*?)\" target=\"_blank\" href=\"(.*?)\">[\\s\\S]*?<img alt=\".*?\" title=\".*?\" src=\"(.*?)\"";
+/
+                              "title=\"(.*?)\" target=\"_blank\" href=\"(.*?)\">[\\s\\S]*?<img alt=\".*?\" title=\".*?\" src=\"(.*?)\".*?>[\\s\\S]*?</a>[\\s\\S]*?<span class=\"otherinfo\"> - (.*?)分</span></div>[\\s\\S]*?<div class=\"otherinfo\">类型：(.*?)</div>";
      */
-    final String zhengZe= "title=\"(.*?)\" target=\"_blank\" href=\"(.*?)\"";
-   //final String zhengZe="title=\"(.*?)\" href=\"(.*?)\".*?363";
+    final String zhengZeItem = "title=\"(.*?)\" target=\"_blank\" href=\"(.*?)\">[\\s\\S]*?<img alt=\".*?\" title=\".*?\" src=\"(.*?)\".*?>([\\s\\S]*?)</a>[\\s\\S]*?<span class=\"otherinfo\"> - (.*?)分</span></div>[\\s\\S]*?<div class=\"otherinfo\">类型：(.*?)</div>";
+    final String zhengZeId = "id/(.*?).html";
+    final String zhengZeType = "<a.*?class=\"movietype\">(.*?)</a>";
+    final String zhengZeTag = "[\\s\\S]*?>(.*?)</";
+
+    // final String zhengZe= "title=\"(.*?)\" target=\"_blank\" href=\"(.*?)\"";
+    //final String zhengZe="title=\"(.*?)\" href=\"(.*?)\".*?363";
     /**
      * The fragment's ListView/GridView.
      */
@@ -102,8 +115,31 @@ public class FindItemFragment extends Fragment implements AbsListView.OnItemClic
         }
 
         // TODO: Change Adapter to display your content
-        mAdapter = new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS);
+        mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
+                R.layout.fragment_finditem_list_item, DummyContent.ITEMS) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view;
+                if (convertView == null) {
+                    view = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.fragment_finditem_list_item, parent, false);
+                } else {
+                    view = convertView;
+                }
+
+                DummyContent.DummyItem mDummyItem = getItem(position);
+
+
+                ImageView img = (ImageView) view.findViewById(R.id.image1);
+                TextView title = (TextView) view.findViewById(R.id.text1);
+                TextView type = (TextView) view.findViewById(R.id.textType);
+                //img.setImageResource(mDummyItem.getImgUrl());
+                title.setText((String) mDummyItem.getContent());
+                //type.setText(mDummyItem.get);
+
+
+                return view;
+            }
+        };
         httpGetFindList();
     }
 
@@ -114,7 +150,7 @@ public class FindItemFragment extends Fragment implements AbsListView.OnItemClic
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
-         mListView.setAdapter(mAdapter);
+        mListView.setAdapter(mAdapter);
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
@@ -168,7 +204,7 @@ public class FindItemFragment extends Fragment implements AbsListView.OnItemClic
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
+     * <p/>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
@@ -177,7 +213,8 @@ public class FindItemFragment extends Fragment implements AbsListView.OnItemClic
         // TODO: Update argument type and name
         public void onFragmentInteraction(String id);
     }
-    public void httpGetFindList(){
+
+    public void httpGetFindList() {
         KJHttp kjh = new KJHttp();
         /*HttpParams params = new HttpParams();
         params.put("id", "1"); //传递参数
@@ -195,20 +232,80 @@ public class FindItemFragment extends Fragment implements AbsListView.OnItemClic
                 super.onSuccess(t);
                 ViewInject.longToast("请求成功");
                 KJLoger.debug("log:" + t.toString());
-
-                Pattern p = Pattern.compile(zhengZe);
+                Pattern p = Pattern.compile(zhengZeItem);
                 Matcher m = p.matcher(t.toString()); //csdn首页的源代码字符串
-                List< Map<String, Object>> result = new ArrayList<>();
+                List<Map<String, Object>> result = new ArrayList<>();
                 while (m.find()) { //循环查找匹配字串
-                    MatchResult mr=m.toMatchResult();
+                    MatchResult mr = m.toMatchResult();
                     Map<String, Object> map = new HashMap<>();
-                    map.put("title", mr.group(1));//找到后group(1)是表达式第一个括号的内容
+                 /*   map.put("title", mr.group(1));//找到后group(1)是表达式第一个括号的内容
                     map.put("url", mr.group(2));//group(2)是表达式第二个括号的内容
+                    map.put("imgurl", mr.group(3));//group(2)是表达式第三个括号的内容*//*
+
+                    KJLoger.debug("groupCount--" + mr.groupCount());
+                    for (int i = 1; i <= mr.groupCount(); i++) {
+                        if (mr != null && mr.group(i) != null) {
+                            KJLoger.debug("group(i)--" + i + "--" + mr.group(i));
+                        }
+                    }*/
+                    for (int groupItem = 1; groupItem <= mr.groupCount(); groupItem++) {
+                        if (mr != null && mr.group(groupItem) != null) {
+                            //KJLoger.debug("group(i)--" + groupItem + "--" + mr.group(groupItem));
+                            switch (groupItem) {
+                                case 1:
+                                    map.put("title", mr.group(groupItem));//找到后group(1)是表达式第一个括号的内容
+                                    break;
+                                case 2:
+                                    map.put("url", mr.group(groupItem));//group(2)是表达式第二个括号的内容
+                                    Pattern pID = Pattern.compile(zhengZeId);
+                                    Matcher mID = pID.matcher(mr.group(groupItem)); //csdn首页的源代码字符串
+                                    mID.find();
+                                    map.put("id", mID.toMatchResult().group(1));//找到后group(1)是表达式第一个括号的内容
+                                   // KJLoger.debug("--" + mID.toMatchResult().group(1));
+                                    break;
+                                case 3:
+                                    map.put("imgurl", mr.group(groupItem));//group(2)是表达式第三个括号的内容
+                                    break;
+                                case 4:
+                                    String htmlTag= mr.group(groupItem);
+                                    if(!TextUtils.isEmpty(htmlTag.trim())){
+                                        Pattern pTag = Pattern.compile(zhengZeTag);
+                                        Matcher mTag  = pTag .matcher(mr.group(groupItem)); //csdn首页的源代码字符串
+                                        mTag.find();
+                                        map.put("tag", mTag .toMatchResult().group(1));//找到后group(1)是表达式第一个括号的内容
+                                    }
+                                    // map.put("tag", mr.group(groupItem));
+                                    break;
+                                case 5:
+                                    map.put("score", mr.group(groupItem));
+                                    break;
+                                case 6:
+                                    if(!TextUtils.isEmpty(mr.group(groupItem).trim())){
+                                        Pattern pType = Pattern.compile(zhengZeType);
+                                        Matcher mType = pType.matcher(mr.group(groupItem));
+                                        List<String> typeList=new ArrayList<String>();
+                                        KJLoger.debug("mrType--" + mType.groupCount());
+                                        while (mType.find()) { //循环查找匹配字串
+                                            MatchResult mrType = mType.toMatchResult();
+                                            for (int groupTypeItem = 1; groupTypeItem <= mrType.groupCount(); groupTypeItem++) {
+                                                if (mrType != null && mrType.group(groupTypeItem) != null) {
+                                                    typeList.add(mr.group(groupItem));
+                                                }
+                                            }
+                                        }
+                                        map.put("type",typeList);//找到后group(1)是表达式第一个括号的内容
+                                    }
+
+                                    break;
+
+                            }
+                        }
+                    }
                     result.add(map);
                 }
                 //adapter = new ArrayAdapter(this,R.layout.view,R.id.textview1,list1);
                 DummyContent.setData(result);
-                ((ArrayAdapter)mAdapter).notifyDataSetChanged();
+                ((ArrayAdapter) mAdapter).notifyDataSetChanged();
 
             }
 
