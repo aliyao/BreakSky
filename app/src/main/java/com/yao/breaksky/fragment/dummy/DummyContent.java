@@ -1,5 +1,7 @@
 package com.yao.breaksky.fragment.dummy;
 
+import org.kymjs.kjframe.utils.KJLoger;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +41,8 @@ public class DummyContent {
     private static void addItem(DummyItem item) {
         ITEMS.add(item);
         ITEM_MAP.put(item.id, item);
+
+        KJLoger.debug("DummyItem:" + item.toString());
 
     }
 

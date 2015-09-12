@@ -12,7 +12,7 @@
     <string name="navigation_drawer_open">打开导航抽屉</string>
     <string name="navigation_drawer_close">关闭导航抽屉</string>
 
-    <string name="action_example">保存</string>
+    <string name="action_example">退出应用</string>
 
     <string name="action_settings">设置</string>
 </resources>

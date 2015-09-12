@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,16 +18,20 @@ import com.yao.breaksky.R;
 import com.yao.breaksky.activity.MainActivity;
 import com.yao.breaksky.fragment.dummy.DummyContent;
 import com.yao.breaksky.net.HttpUrl;
+import com.yao.breaksky.tools.YOBitmap;
 
+import org.kymjs.kjframe.KJBitmap;
 import org.kymjs.kjframe.KJHttp;
 import org.kymjs.kjframe.http.HttpCallBack;
 import org.kymjs.kjframe.ui.ViewInject;
 import org.kymjs.kjframe.utils.KJLoger;
 
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,6 +73,7 @@ public class FindItemFragment extends Fragment implements AbsListView.OnItemClic
     final String zhengZeItem = "title=\"(.*?)\" target=\"_blank\" href=\"(.*?)\">[\\s\\S]*?<img alt=\".*?\" title=\".*?\" src=\"(.*?)\".*?>([\\s\\S]*?)</a>[\\s\\S]*?<span class=\"otherinfo\"> - (.*?)分</span></div>[\\s\\S]*?<div class=\"otherinfo\">类型：(.*?)</div>";
     final String zhengZeId = "id/(.*?).html";
     final String zhengZeType = "<a.*?class=\"movietype\">(.*?)</a>";
+   //final String zhengZeType = "class=\"movietype\">(.*?)</a>";
     final String zhengZeTag = "[\\s\\S]*?>(.*?)</";
 
     // final String zhengZe= "title=\"(.*?)\" target=\"_blank\" href=\"(.*?)\"";
@@ -129,18 +133,40 @@ public class FindItemFragment extends Fragment implements AbsListView.OnItemClic
                 DummyContent.DummyItem mDummyItem = getItem(position);
 
 
-                ImageView img = (ImageView) view.findViewById(R.id.image1);
-                TextView title = (TextView) view.findViewById(R.id.text1);
-                TextView type = (TextView) view.findViewById(R.id.textType);
+                ImageView img = (ImageView) view.findViewById(R.id.image);
+                TextView title = (TextView) view.findViewById(R.id.title);
+                TextView type = (TextView) view.findViewById(R.id.type);
+                TextView tag = (TextView) view.findViewById(R.id.tag);
+                TextView score = (TextView) view.findViewById(R.id.score);
                 //img.setImageResource(mDummyItem.getImgUrl());
                 title.setText((String) mDummyItem.getContent());
-                //type.setText(mDummyItem.get);
-
-
+                tag.setText(removeNull(mDummyItem.getTag()));
+                score.setText(removeNull(mDummyItem.getScore())+"分");
+                List<String>  typelist=mDummyItem.getType();
+                String typeStr="类型：";
+                if(typelist!=null&&typelist.size()>0){
+                    for(int item=0;item<typelist.size();item++){
+                        if (item==0){
+                            typeStr=typeStr+typelist.get(item);
+                        }else{
+                            typeStr=typeStr+"|"+typelist.get(item);
+                        }
+                    }
+                }else{
+                    typeStr="";
+                }
+                type.setText(removeNull(typeStr));
+                YOBitmap.getmKJBitmap().display(img,removeNull(mDummyItem.getImgUrl()));
                 return view;
             }
         };
         httpGetFindList();
+    }
+    public String removeNull(Object mObject){
+        if(mObject==null){
+            return "";
+        }
+        return (String)mObject;
     }
 
     @Override
@@ -284,12 +310,11 @@ public class FindItemFragment extends Fragment implements AbsListView.OnItemClic
                                         Pattern pType = Pattern.compile(zhengZeType);
                                         Matcher mType = pType.matcher(mr.group(groupItem));
                                         List<String> typeList=new ArrayList<String>();
-                                        KJLoger.debug("mrType--" + mType.groupCount());
                                         while (mType.find()) { //循环查找匹配字串
                                             MatchResult mrType = mType.toMatchResult();
                                             for (int groupTypeItem = 1; groupTypeItem <= mrType.groupCount(); groupTypeItem++) {
                                                 if (mrType != null && mrType.group(groupTypeItem) != null) {
-                                                    typeList.add(mr.group(groupItem));
+                                                    typeList.add(mrType.group(groupTypeItem));
                                                 }
                                             }
                                         }
