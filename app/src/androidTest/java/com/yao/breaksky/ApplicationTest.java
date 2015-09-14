@@ -1,4 +1,4 @@
-package com.yao.yoworld;
+package com.yao.breaksky;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
